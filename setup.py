@@ -16,7 +16,7 @@ WORK_DIR = pathlib.Path(__file__).parent
 # Check python version
 MINIMAL_PY_VERSION = (3, 9)
 if sys.version_info < MINIMAL_PY_VERSION:
-    raise RuntimeError('eskiz-sms works only with Python 3.9+')
+    raise RuntimeError('eskiz-sms-client works only with Python 3.9+')
 
 
 @functools.lru_cache()
@@ -67,7 +67,7 @@ def get_requirements(filename=None):
 
 
 setup(
-    name='eskiz-sms',
+    name='eskiz-sms-client',
     version=get_version(),
     packages=find_packages(exclude=('tests', 'tests.*', 'examples.*')),
     url='https://github.com/old-juniors/eskiz-sms',
