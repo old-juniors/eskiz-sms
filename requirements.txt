@@ -1,0 +1,6 @@
+aiohttp>=3.9.3
+aiohttp-socks>=0.8.4
+attrs>=23.2.0
+certifi>=2024.2.2
+pydantic>=2.6.2
+pyjwt>=2.8.0
