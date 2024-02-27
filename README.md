@@ -2,71 +2,41 @@
 
 ## Features
 
-- Token Management:
-  Auto auth and refresh expired tokens.
+- Token Management: Auto auth and refresh expired tokens.
+- Message Building: Construct messages efficiently with `MessageBuilder`.
+- Token Context Management: Manage token contexts easily for temporary changes.
+- Synchronous Wrapper: Utilize synchronous capabilities with `sync.force_sync`.
 
-- Message Building:
-  Construct messages efficiently with `MessageBuilder`.
-
-- Token Context Management:
-  Manage token contexts easily for temporary changes.
-
-- Synchronous Wrapper:
-  Utilize synchronous capabilities with `sync.force_sync`.
+> [!WARNING]
+> We're currently in beta, actively refining our features.
 
 ---
 
-## Getting started
+## Installation
 
-There are two ways to install the library.
-
-Installation using pip (a Python package manager):
-
-```shell
-$ pip install eskiz-sms-client
 ```
-
-```shell
-$ pip install git+https://github.com/Old-Juniors/eskiz-sms
-```
-
-Installation from source (requires git):
-
-```shell
-$ git clone https://github.com/Old-Juniors/eskiz-sms
-$ cd eskiz-sms
-$ python setup.py install
+pip install eskiz-sms-client
 ```
 
 ---
 
-### Credentials
-
-```
-Email:    test@eskiz.uz
-Password: j6DWtQjjpLDNjWEk74Sx
-```
-
----
-
-## Auth
+## Quickstart
 
 Example for auth get token:
 
 ```py
+import asyncio
+
 from eskiz import SMSClient
 
-client = SMSClient()
+async def main():
+  client = SMSClient()
+  await client.get_token('test@eskiz.uz', 'password')
 
-await client.get_token('test@eskiz.uz', 'password')
+  print(client.token) # NEW TOKEN
 
-print(client.token)
-
-# new token:
-# eyJ0eXAiO.3ysHTXEZG4M.mrqsquTf9PJ_sjVHW7...
+asyncio.run(main())
 ```
-
-## Refresh Token
 
 Example for refresh token:
 
@@ -74,21 +44,15 @@ Example for refresh token:
 if client.token.is_expired:
   await client.refresh_token()
 
-print(client.token)
-
-# refreshed token:
-# eyJ0eXAiO.3ysHTXEZG4M.mrqsquTf9PJ_sjVHW7...
+print(client.token) # REFRESHED TOKEN
 ```
-
-## Send SMS
 
 Example for send SMS:
 
 ```py
-client = SMSClient(
-  token='TOKEN',
-  # as_dict=False
-)
+from eskiz import SMSClient
+
+client = SMSClient(token='TOKEN', as_dict=False)
 
 response = await client.send_sms(
   mobile_phone=998991234567,
@@ -99,12 +63,11 @@ print(response.status) # 'waiting'
 # current response as dict
 print(response.model_dump())
 
-# set `as_dict` to `True`,
-# all responses will be returned as dict
-print(response)
-
 # { "id": "<id>", "status": "waiting", "message": "Waiting for SMS provider" }
 ```
+
+> [!TIP]
+> set `as_dict` to `True`, all responses will be returned as dict
 
 ## More Examples
 
