@@ -23,7 +23,7 @@ There are two ways to install the library.
 Installation using pip (a Python package manager):
 
 ```shell
-$ pip install eskiz-sms
+$ pip install eskiz-sms-client
 ```
 
 ```shell
