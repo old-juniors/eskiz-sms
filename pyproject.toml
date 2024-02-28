@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "eskiz-sms-client"
 packages = [{ include = "eskiz" }]
-version = "1.0.2a0"
+version = "1.0.2"
 description = "Async/Sync Python SDK of Eskiz.uz SMS Gateway"
 authors = ["hoosnick <hoosnick@morphix.uz>"]
 license = "MIT"
