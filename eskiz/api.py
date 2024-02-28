@@ -73,8 +73,6 @@ class SMSClient:
         as_dict: bool = False,
         service_url: str = SERVICE_URL,
         connections_limit: Optional[int] = None,
-        proxy: Optional[str] = None,
-        proxy_auth: Optional[aiohttp.BasicAuth] = None,
         loop: asyncio.AbstractEventLoop = None,
         json_serialize: callable = None,
         json_deserialize: callable = None
@@ -105,39 +103,14 @@ class SMSClient:
         self._service_url = None
         self.service = service_url
 
-        # Proxy settings
-        self.proxy = proxy
-        self.proxy_auth = proxy_auth
-
         # aiohttp main session
         ssl_context = ssl.create_default_context(cafile=certifi.where())
 
-        if isinstance(proxy, str) and proxy.startswith(('socks5://', 'socks4://')):
-            from aiohttp_socks import SocksConnector
-            from aiohttp_socks.utils import parse_proxy_url
-
-            socks_ver, host, port, username, password = parse_proxy_url(proxy)
-            if proxy_auth:
-                if not username:
-                    username = proxy_auth.login
-                if not password:
-                    password = proxy_auth.password
-
-            connector = SocksConnector(
-                socks_ver=socks_ver, host=host, port=port,
-                username=username, password=password,
-                limit=connections_limit, ssl_context=ssl_context,
-                rdns=True, loop=self.loop
-            )
-
-            self.proxy = None
-            self.proxy_auth = None
-        else:
-            connector = aiohttp.TCPConnector(
-                limit=connections_limit,
-                ssl=ssl_context,
-                loop=self.loop
-            )
+        connector = aiohttp.TCPConnector(
+            limit=connections_limit,
+            ssl=ssl_context,
+            loop=self.loop
+        )
 
         self.session = aiohttp.ClientSession(
             connector=connector, loop=self.loop,
@@ -185,10 +158,7 @@ class SMSClient:
         _method, url = self.format_api_url(**method)
 
         async with self.session.request(
-            method=_method, url=url,
-            data=payload, headers=headers,
-            proxy_auth=self.proxy_auth,
-            proxy=self.proxy
+            method=_method, url=url, data=payload, headers=headers,
         ) as response:
 
             json_data = await response.json(loads=self._json_deserialize)
