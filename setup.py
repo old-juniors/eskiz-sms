@@ -74,11 +74,11 @@ setup(
     license='MIT',
     requires_python='>=3.9',
     author='Old Juniors',
-    author_email='juniors@⚡️.uz',
+    author_email='info@juniorlar.uz',
     maintainer=', '.join((
-        'Old Juniors <juniors@⚡️.uz>',
+        'Old Juniors <info@juniorlar.uz>',
     )),
-    maintainer_email='juniors@⚡️.uz',
+    maintainer_email='info@juniorlar.uz',
     description='Async/Sync Python Eskiz.uz SMS Gateway',
     long_description=get_description(),
     classifiers=[
