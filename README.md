@@ -71,7 +71,7 @@ print(response.model_dump())
 
 ## More Examples
 
-In examples diriectory: [see](/examples/)
+In examples diriectory: [see](https://github.com/old-juniors/eskiz-sms/tree/main/examples)
 
 ## Documentation
 

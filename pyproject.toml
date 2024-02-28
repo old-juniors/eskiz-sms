@@ -1,0 +1,48 @@
+[tool.poetry]
+name = "eskiz-sms-client"
+packages = [{ include = "eskiz" }]
+version = "1.0.2a0"
+description = "Async/Sync Python SDK of Eskiz.uz SMS Gateway"
+authors = ["hoosnick <hoosnick@morphix.uz>"]
+license = "MIT"
+readme = "README.md"
+keywords = ["eskiz-sms", "eskiz", "eskiz-sms-client", "eskiz.uz"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: SDK",
+
+    "License :: OSI Approved :: MIT License",
+
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+aiohttp = ">=3.9.3"
+attrs = ">=23.2.0"
+certifi = ">=2024.2.2"
+pydantic = ">=2.6.2"
+pyjwt = ">=2.8.0"
+ujson = { version = ">=5.9.0", optional = true }
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8.0.1"
+pytest-asyncio = ">=0.23.5"
+pytest-cov = ">=4.1.0"
+codecov = ">=2.1.13"
+
+[tool.poetry.extras]
+ujson = ["ujson"]
+
+[tool.poetry.urls]
+"Source" = "https://github.com/old-juniors/eskiz-sms"
+"Bug Tracker" = "https://github.com/old-juniors/eskiz-sms/issues"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

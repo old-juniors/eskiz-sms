@@ -1,6 +1,10 @@
 env/
 venv/
 
+dist/
+.pypirc
+*.lock
+
 .env
 
 .vscode/
