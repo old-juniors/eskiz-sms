@@ -35,7 +35,7 @@ def get_version():
 
 def get_description():
     """
-    Read full description from 'README.rst'
+    Read full description from 'README.md'
 
     :return: description
     :rtype: str
@@ -81,6 +81,7 @@ setup(
     maintainer_email='info@juniorlar.uz',
     description='Async/Sync Python Eskiz.uz SMS Gateway',
     long_description=get_description(),
+    long_description_content_type='text/markdown',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
