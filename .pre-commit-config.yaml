@@ -14,6 +14,7 @@ repos:
         types: [file, python]
       - id: mypy
         name: mypy
-        entry: poetry run mypy eskiz/
+        entry: poetry run mypy --show-column-numbers eskiz/
         language: system
         types: [file, python]
+        pass_filenames: false

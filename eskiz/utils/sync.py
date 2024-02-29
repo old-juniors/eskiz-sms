@@ -2,10 +2,10 @@ import functools
 
 
 def force_sync(fn):
-    '''
-    turn an async function to sync function:
+    """
+    Turn an async function to sync function:
     https://gist.github.com/phizaz/20c36c6734878c6ec053245a477572ec
-    '''
+    """
     import asyncio
 
     @functools.wraps(fn)

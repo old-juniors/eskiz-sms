@@ -9,14 +9,14 @@ from .enums import MessageStatus
 
 
 class Message(EskizBaseModel):
-    to_: int = Field(..., alias='to')
+    to_: int = Field(..., alias="to")
     text: str
     user_sms_id: str
 
 
 class Messages(EskizBaseModel):
     messages: List[Message]
-    from_: str = Field(..., alias='from')
+    from_: str = Field(..., alias="from")
     dispatch_id: Union[str, int]
 
 
@@ -85,7 +85,7 @@ class Result(EskizBaseModel):
     price: int
     is_ad: bool
     nick: str
-    to_: str = Field(..., alias='to')
+    to_: str = Field(..., alias="to")
     message: str
     encoding: int
     parts_count: int
@@ -114,8 +114,8 @@ class Data(EskizBaseModel):
     next_page_url: Optional[str]
     per_page: int
     last_page: int
-    from_: int = Field(..., alias='from')
-    to_: int = Field(..., alias='to')
+    from_: int = Field(..., alias="from")
+    to_: int = Field(..., alias="to")
     total: int
     result: List[Result]
     links: List[Link]

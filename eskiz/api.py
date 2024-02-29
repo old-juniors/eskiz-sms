@@ -1,44 +1,37 @@
 import asyncio
-
 import contextlib
-from contextvars import ContextVar
-
 import ssl
-from typing import Dict, List, Optional, Union
+from contextvars import ContextVar
+from datetime import datetime
+from typing import Any, Callable, Dict, List, Optional, Union
 
 import aiohttp
 import certifi
 import jwt
-
-from datetime import datetime
 
 from . import types
 from .utils import exceptions
 from .utils.fields import _generate_data
 from .utils.methods import Methods
 
-__all__ = ['SMSClient', 'SERVICE_URL']
+__all__ = ["SMSClient", "SERVICE_URL"]
 
-SERVICE_URL = 'notify.eskiz.uz'
+SERVICE_URL = "notify.eskiz.uz"
 
 
 class Token:
     """
     Represents an authentication token.
 
-    Methods:
-        - `__str__`: Returns the string representation of the token.
-        - `is_expired`: Checks if the token is expired.
+    - `__str__()`: Returns the string representation of the token.
+    - `is_expired`: Checks if the token is expired.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Union[Any, str, None]):
         self.value = value
 
-    def __str__(self):
-        """
-        Returns the `string` representation of the token.
-        """
-        return self.value
+    def __str__(self) -> str:
+        return str(self.value)
 
     @property
     def is_expired(self):
@@ -65,17 +58,17 @@ class Token:
 
 
 class SMSClient:
-    __context_token = ContextVar('EskizBearerToken')
+    __context_token: ContextVar = ContextVar("EskizBearerToken")
 
     def __init__(
         self,
         token: Optional[str] = None,
         as_dict: bool = False,
         service_url: str = SERVICE_URL,
-        connections_limit: Optional[int] = None,
-        loop: asyncio.AbstractEventLoop = None,
-        json_serialize: callable = None,
-        json_deserialize: callable = None
+        connections_limit: int = 100,
+        loop: Optional[asyncio.AbstractEventLoop] = None,
+        json_serialize: Optional[Callable[..., Any]] = None,
+        json_deserialize: Optional[Callable[..., Any]] = None,
     ):
         # Asyncio loop instance
         if loop is None:
@@ -85,9 +78,9 @@ class SMSClient:
         # JSON
         if not json_serialize or not json_deserialize:
             try:
-                import ujson as json
+                import ujson as json  # type: ignore
             except ImportError:
-                import json
+                import json  # type: ignore[no-redef]
 
             if json_serialize is None:
                 json_serialize = json.dumps
@@ -107,68 +100,70 @@ class SMSClient:
         ssl_context = ssl.create_default_context(cafile=certifi.where())
 
         connector = aiohttp.TCPConnector(
-            limit=connections_limit,
-            ssl=ssl_context,
-            loop=self.loop
+            limit=connections_limit, ssl=ssl_context, loop=self.loop
         )
 
         self.session = aiohttp.ClientSession(
-            connector=connector, loop=self.loop,
-            json_serialize=json_serialize
+            connector=connector, loop=self.loop, json_serialize=json_serialize
         )
 
         self._token = token
         self.as_dict = as_dict
 
     @property
-    def service(self) -> str:
+    def service(self):
         return self._service
 
     @service.setter
     def service(self, value: str):
-        if '.' not in value or '://' in value:
+        if "." not in value or "://" in value:
             raise ValueError(f"Invalid service URL: {value}")
 
-        value = value.rstrip('/')
+        value = value.rstrip("/")
 
         self._service = value
         self._service_url = f"https://{value}"
         self._api_url = f"https://{value}/api/"
 
     @property
-    def api_url(self) -> str:
+    def api_url(self):
         return self._api_url
 
     @property
-    def service_url(self) -> str:
+    def service_url(self):
         return self._service_url
 
     def format_api_url(self, method: str, path: str):
-        return method, self.api_url + path
+        return method, str(self.api_url) + path
 
     async def handle_error(self, error_text=None):
         await self.close()  # close session
         raise exceptions.EskizError.detect(error_text)
 
     async def request(
-        self, method: dict, *,
-        payload: Optional[dict] = None,
-        headers: Optional[dict] = None
+        self,
+        method: Dict,
+        *,
+        payload: Optional[Union[Dict[str, Any], str]] = None,
+        headers: Optional[Dict] = None,
     ):
         _method, url = self.format_api_url(**method)
 
         async with self.session.request(
-            method=_method, url=url, data=payload, headers=headers,
+            method=_method,
+            url=url,
+            data=payload,
+            headers=headers,
         ) as response:
 
             json_data = await response.json(loads=self._json_deserialize)
 
-            if 'status' in json_data and json_data['status'] == 'fail':
-                error_text = json_data['data']['alert']
+            if "status" in json_data and json_data["status"] == "fail":
+                error_text = json_data["data"]["alert"]
                 await self.handle_error(error_text)
 
-            if len(json_data) == 1 and 'message' in json_data:
-                await self.handle_error('BEARER_TOKEN_INVALID')
+            if len(json_data) == 1 and "message" in json_data:
+                await self.handle_error("BEARER_TOKEN_INVALID")
 
         return json_data
 
@@ -210,21 +205,18 @@ class SMSClient:
         await self.session.close()
 
     def _set_header_token(self, token: Optional[str]):
-        headers = {}
+        headers: Dict[str, str] = {}
+
         if self.token:
-            headers.setdefault('Authorization', f'Bearer {self.token}')
+            headers.setdefault("Authorization", f"Bearer {self.token}")
 
         if token:
-            headers['Authorization'] = f'Bearer {token}'
+            headers["Authorization"] = f"Bearer {token}"
 
         return headers
 
     async def get_token(
-        self,
-        email: str,
-        password: str,
-        *,
-        auth: bool = True
+        self, email: str, password: str, *, auth: bool = True
     ) -> str:
         """For authorization use this API, returns a token
 
@@ -241,14 +233,12 @@ class SMSClient:
         response = types.TokenResponse(**raw)
 
         if auth:
-            self.token = response.data.token
+            self._token = response.data.token
 
-        return self.token
+        return self.token.__str__()
 
     async def refresh_token(
-        self,
-        token: Optional[str] = None,
-        auth: bool = True
+        self, token: Optional[str] = None, auth: bool = True
     ) -> str:
         """Updates the current token
 
@@ -263,9 +253,9 @@ class SMSClient:
         response = types.TokenResponse(**raw)
 
         if auth:
-            self.token = response.data.token
+            self._token = response.data.token
 
-        return self.token
+        return self.token.__str__()
 
     async def get_user_data(
         self, token: Optional[str] = None
@@ -285,8 +275,7 @@ class SMSClient:
         return types.User(**(raw or {}))
 
     async def get_template(
-        self, id: Union[int, str], *,
-        token: Optional[str] = None
+        self, id: Union[int, str], *, token: Optional[str] = None
     ) -> Union[types.Template, Dict]:
         """Get template by ID
 
@@ -299,7 +288,10 @@ class SMSClient:
         headers = self._set_header_token(token)
 
         method = Methods.GET_TEMPLATE
-        method['path'] = method.get('path').format(id=id)
+
+        path = method.get("path")
+        if isinstance(path, str):
+            method["path"] = path.format(id=id)
 
         raw = await self.request(method, headers=headers)
 
@@ -330,9 +322,9 @@ class SMSClient:
         mobile_phone: Union[str, int],
         message: str,
         *,
-        from_: str = '4546',
+        from_: str = "4546",
         callback_url: Optional[str] = None,
-        token: Optional[str] = None
+        token: Optional[str] = None,
     ) -> Union[types.MessageResponse, Dict]:
         """Send SMS
 
@@ -344,7 +336,7 @@ class SMSClient:
             - You can provide a callback URL where you will receive POST data in the following format:
 
             ```json
-            { 
+            {
               "message_id": "4385062",
               "user_sms_id": "vash_ID_zdes",
               "country": "UZ",
@@ -358,10 +350,12 @@ class SMSClient:
         Returns:
             Union[types.MessageResponse, Dict]
         """
-        payload = _generate_data(**locals(), exclude=['token'])
+        payload = _generate_data(**locals(), exclude=["token"])
         headers = self._set_header_token(token)
 
-        raw = await self.request(Methods.SEND_SMS, payload=payload, headers=headers)
+        raw = await self.request(
+            Methods.SEND_SMS, payload=payload, headers=headers
+        )
 
         if self.as_dict:
             return raw
@@ -369,10 +363,7 @@ class SMSClient:
         return types.MessageResponse(**raw)
 
     async def send_batch_sms(
-        self,
-        to: types.Messages,
-        *,
-        token: Optional[str] = None
+        self, to: types.Messages, *, token: Optional[str] = None
     ) -> Union[types.MessageResponse, Dict]:
         """Broadcast
 
@@ -397,7 +388,9 @@ class SMSClient:
         json = to.model_dump_json(by_alias=True)
         payload = self._json_serialize(json)
 
-        raw = await self.request(Methods.SEND_BATCH_SMS, payload=payload, headers=headers)
+        raw = await self.request(
+            Methods.SEND_BATCH_SMS, payload=payload, headers=headers
+        )
 
         if self.as_dict:
             return raw
@@ -412,7 +405,7 @@ class SMSClient:
         *,
         callback_url: Optional[str] = None,
         unicode: int = 0,
-        token: Optional[str] = None
+        token: Optional[str] = None,
     ) -> Dict:
         """Using this API you can send SMS to foreign countries around the world.
 
@@ -426,12 +419,13 @@ class SMSClient:
         Returns:
             Dict
         """
-        payload = _generate_data(**locals(), exclude=['token'])
+        payload = _generate_data(
+            **locals(), exclude=["token"], is_payload=True
+        )
         headers = self._set_header_token(token)
 
         raw = await self.request(
-            Methods.SEND_INTERNATIONAL_SMS,
-            payload=payload, headers=headers
+            Methods.SEND_INTERNATIONAL_SMS, payload=payload, headers=headers
         )
 
         if self.as_dict:
@@ -447,7 +441,7 @@ class SMSClient:
         *,
         page_size: int = 20,
         count: int = 0,
-        token: Optional[str] = None
+        token: Optional[str] = None,
     ) -> Union[types.MessageDetails, Dict]:
         """Message Detailing
 
@@ -466,12 +460,11 @@ class SMSClient:
         if isinstance(end_date, datetime):
             end_date = end_date.strftime("%Y-%m-%d %H:%M")
 
-        payload = _generate_data(**locals(), exclude=['token'])
+        payload = _generate_data(**locals(), exclude=["token"])
         headers = self._set_header_token(token)
 
         raw = await self.request(
-            Methods.GET_MESSAGE_DETAILS,
-            payload=payload, headers=headers
+            Methods.GET_MESSAGE_DETAILS, payload=payload, headers=headers
         )
 
         if self.as_dict:
@@ -484,7 +477,7 @@ class SMSClient:
         user_id: int,
         dispatch_id: Union[str, int],
         *,
-        token: Optional[str] = None
+        token: Optional[str] = None,
     ):
         """Receive all sent SMS via ID mailing
 
@@ -495,12 +488,11 @@ class SMSClient:
         Returns:
             Union[types.MessageDetails, Dict]
         """
-        payload = _generate_data(**locals(), exclude=['token'])
+        payload = _generate_data(**locals(), exclude=["token"])
         headers = self._set_header_token(token)
 
         raw = await self.request(
-            Methods.GET_MESSAGE_BY_DISPATCH,
-            payload=payload, headers=headers
+            Methods.GET_MESSAGE_BY_DISPATCH, payload=payload, headers=headers
         )
 
         if self.as_dict:
@@ -513,7 +505,7 @@ class SMSClient:
         user_id: int,
         dispatch_id: Union[str, int],
         *,
-        token: Optional[str] = None
+        token: Optional[str] = None,
     ) -> Union[types.BroadcastStatus, Dict]:
         """Get broadcast status
 
@@ -524,12 +516,11 @@ class SMSClient:
         Returns:
             Union[types.BroadcastStatus, Dict]
         """
-        payload = _generate_data(**locals(), exclude=['token'])
+        payload = _generate_data(**locals(), exclude=["token"])
         headers = self._set_header_token(token)
 
         raw = await self.request(
-            Methods.GET_DISPATCH_STATUS,
-            payload=payload, headers=headers
+            Methods.GET_DISPATCH_STATUS, payload=payload, headers=headers
         )
 
         if self.as_dict:
@@ -537,9 +528,7 @@ class SMSClient:
 
         return types.BroadcastStatus(**(raw or {}))
 
-    async def get_nick_list(
-        self, token: Optional[str] = None
-    ) -> List[str]:
+    async def get_nick_list(self, token: Optional[str] = None) -> List[str]:
         """Get nickname list
 
         Returns:
@@ -557,7 +546,7 @@ class SMSClient:
         month: int,
         *,
         is_global: int = 0,
-        token: Optional[str] = None
+        token: Optional[str] = None,
     ) -> Union[types.TotalMessages, Dict]:
         """SMS Totals
 
@@ -570,11 +559,15 @@ class SMSClient:
             Union[types.TotalMessages, Dict]
         """
         filters = _generate_data(
-            **locals(), exclude=['token'], is_payload=False)
+            **locals(), exclude=["token"], is_payload=False
+        )
         headers = self._set_header_token(token)
 
         method = Methods.GET_SMS_TOTALS
-        method['path'] = method.get('path') + '?' + filters
+
+        path = method.get("path")
+        if isinstance(path, str) and isinstance(filters, str):
+            method["path"] += "?" + filters
 
         raw = await self.request(method, headers=headers)
 

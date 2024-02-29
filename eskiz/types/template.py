@@ -31,7 +31,7 @@ class Data(EskizBaseModel):
     next_page_url: Any
     per_page: int
     last_page: int
-    from_: int = Field(..., alias='from')
+    from_: int = Field(..., alias="from")
     to: int
     total: int
     result: List[ResultItem]

@@ -10,27 +10,24 @@ class MessageBuilder:
         self,
         dispatch_id: Union[str, int],
         *,
-        from_: str = '4546',
-        messages: Optional[List[Message]] = None
+        from_: str = "4546",
+        messages: Optional[List[Message]] = None,
     ):
         self.messages = messages or []
         self.from_ = from_
         self.dispatch_id = dispatch_id
 
-    def add(
-        self, to: int, text: str,
-        user_sms_id: Optional[str] = None
-    ):
+    def add(self, to: int, text: str, user_sms_id: Optional[str] = None):
         if user_sms_id is None:
             user_sms_id = str(uuid.uuid4())
 
         data = _generate_data(**locals())
-
-        self.messages.append(Message(**data))
+        if isinstance(data, dict):
+            self.messages.append(Message(**data))
 
     def as_messages(self) -> Messages:
         return Messages(
             messages=self.messages,
-            from_=self.from_,
-            dispatch_id=self.dispatch_id
+            from_=self.from_,  # type: ignore[call-arg]
+            dispatch_id=self.dispatch_id,
         )

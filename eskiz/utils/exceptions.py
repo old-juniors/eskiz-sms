@@ -1,15 +1,15 @@
-from typing import Optional
+from typing import List, Optional
 
 
 class EskizError(Exception):
-    __subclasses = []
+    __subclasses: List = []
     match: Optional[str] = None
     text: Optional[str] = None
 
     @classmethod
     def get_text(cls):
         if cls.text is None and cls.match is not None:
-            return cls.match.replace('_', ' ').capitalize() + '!'
+            return cls.match.replace("_", " ").capitalize() + "!"
         return cls.text
 
     def __init_subclass__(cls, match: Optional[str] = None, **kwargs):
@@ -28,7 +28,6 @@ class EskizError(Exception):
         """
         match = description.upper()
         for err in cls.__subclasses:
-            err: cls
             if err is cls:
                 continue
             if err.match in match:
@@ -37,13 +36,13 @@ class EskizError(Exception):
         raise cls(description)
 
 
-class BearerTokenInvalid(EskizError, match='BEARER_TOKEN_INVALID'):
+class BearerTokenInvalid(EskizError, match="BEARER_TOKEN_INVALID"):
     pass
 
 
-class FieldsFormatInvalid(EskizError, match='FIELDS_FORMAT_INVALID'):
+class FieldsFormatInvalid(EskizError, match="FIELDS_FORMAT_INVALID"):
     pass
 
 
-class UnknownMethod(EskizError, match='UNKNOWN_METHOD'):
+class UnknownMethod(EskizError, match="UNKNOWN_METHOD"):
     pass
