@@ -1,0 +1,19 @@
+fail_fast: true
+repos:
+  - repo: local
+    hooks:
+      - id: black
+        name: black
+        entry: poetry run black --check eskiz/
+        language: system
+        types: [file, python]
+      - id: isort
+        name: isort
+        entry: poetry run isort --check eskiz/
+        language: system
+        types: [file, python]
+      - id: mypy
+        name: mypy
+        entry: poetry run mypy eskiz/
+        language: system
+        types: [file, python]
