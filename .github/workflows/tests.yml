@@ -3,10 +3,16 @@ name: Test Suite
 on:
   push:
     branches: ["main"]
+    paths:
+      - "eskiz/**"
     paths-ignore:
       - "examples/**"
+    tags-ignore:
+      - "*"
   pull_request:
     branches: ["main"]
+    paths:
+      - "eskiz/**"
     paths-ignore:
       - "examples/**"
 
