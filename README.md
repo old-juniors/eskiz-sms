@@ -3,7 +3,7 @@
 ![GitHub Release](https://img.shields.io/github/v/release/old-juniors/eskiz-sms?include_prereleases&display_name=release&label=Release)
 ![GitHub issue custom search in repo](https://img.shields.io/github/issues-search/old-juniors/eskiz-sms?query=is%3Aopen&label=Issues)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/eskiz-sms-client?label=Downloads)
-![Test Suite](https://github.com/old-juniors/eskiz-sms/actions/workflows/tests.yml/badge.svg)
+[![Test Suite](https://github.com/old-juniors/eskiz-sms/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/old-juniors/eskiz-sms/actions/workflows/tests.yml)
 
 ## Features
 
