@@ -1,5 +1,10 @@
 ## Eskiz SMS Gateway Python SDK (BETA)
 
+![GitHub Release](https://img.shields.io/github/v/release/old-juniors/eskiz-sms?include_prereleases&display_name=release&label=Release)
+![GitHub issue custom search in repo](https://img.shields.io/github/issues-search/old-juniors/eskiz-sms?query=is%3Aopen&label=Issues)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/eskiz-sms-client?label=Downloads)
+![Test Suite](https://github.com/old-juniors/eskiz-sms/actions/workflows/tests.yml/badge.svg)
+
 ## Features
 
 - Token Management: Auto auth and refresh expired tokens.
@@ -75,4 +80,4 @@ In examples diriectory: [see](https://github.com/old-juniors/eskiz-sms/tree/main
 
 ## Documentation
 
-https://documenter.getpostman.com/view/663428/RzfmES4z
+<https://documenter.getpostman.com/view/663428/RzfmES4z>
