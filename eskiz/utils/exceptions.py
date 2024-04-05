@@ -36,6 +36,10 @@ class EskizError(Exception):
         raise cls(description)
 
 
+class AuthCredsInvalid(EskizError, match="AUTH_CREDS_INVALID"):
+    pass
+
+
 class BearerTokenInvalid(EskizError, match="BEARER_TOKEN_INVALID"):
     pass
 
