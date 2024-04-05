@@ -5,4 +5,4 @@ from .utils import exceptions
 
 __all__ = ["SMSClient", "types", "enums", "utils", "exceptions"]
 
-__version__ = "1.0.3"
+__version__ = "1.0.4"
