@@ -1,5 +1,6 @@
 import asyncio
 import contextlib
+import logging
 import ssl
 from contextvars import ContextVar
 from datetime import datetime
@@ -64,6 +65,7 @@ class SMSClient:
         self,
         token: Optional[str] = None,
         as_dict: bool = False,
+        log_response: bool = False,
         service_url: str = SERVICE_URL,
         connections_limit: int = 100,
         loop: Optional[asyncio.AbstractEventLoop] = None,
@@ -109,6 +111,15 @@ class SMSClient:
 
         self._token = token
         self.as_dict = as_dict
+
+        self.log_response = log_response
+
+        if log_response:
+            logging.basicConfig(
+                encoding="utf-8",
+                level=logging.INFO,
+                format="%(asctime)s - %(levelname)s - %(message)s",
+            )
 
     @property
     def service(self):
@@ -158,12 +169,15 @@ class SMSClient:
 
             json_data = await response.json(loads=self._json_deserialize)
 
+            if self.log_response:
+                logging.info(str(json_data))
+
             if "status" in json_data and json_data["status"] == "fail":
                 error_text = json_data["data"]["alert"]
                 await self.handle_error(error_text)
 
             if len(json_data) == 1 and "message" in json_data:
-                await self.handle_error("BEARER_TOKEN_INVALID")
+                await self.handle_error("AUTH_CREDS_INVALID")
 
         return json_data
 
