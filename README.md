@@ -43,6 +43,9 @@ async def main():
 asyncio.run(main())
 ```
 
+> [!TIP]
+> Enable `SMSClient(log_response=True)`; all responses will be logged on stdout.
+
 Example for refresh token:
 
 ```py
