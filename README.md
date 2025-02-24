@@ -10,7 +10,6 @@
 - Token Management: Auto auth and refresh expired tokens.
 - Message Building: Construct messages efficiently with `MessageBuilder`.
 - Token Context Management: Manage token contexts easily for temporary changes.
-- Synchronous Wrapper: Utilize synchronous capabilities with `sync.force_sync`.
 
 > [!WARNING]
 > We're currently in beta, actively refining our features.
