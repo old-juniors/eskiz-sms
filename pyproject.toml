@@ -14,8 +14,8 @@ warn_unused_configs = true
 name = "eskiz-sms-client"
 packages = [{ include = "eskiz" }]
 version = "1.0.4"
-description = "Async/Sync Python SDK of Eskiz.uz SMS Gateway"
-authors = ["hoosnick <hoosnick@morphix.uz>"]
+description = "Async Python SDK of Eskiz.uz SMS Gateway"
+authors = ["hoosnick <hoosnick000@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 keywords = ["eskiz-sms", "eskiz", "eskiz-sms-client", "eskiz.uz"]
