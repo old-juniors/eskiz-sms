@@ -13,7 +13,7 @@ warn_unused_configs = true
 [tool.poetry]
 name = "eskiz-sms-client"
 packages = [{ include = "eskiz" }]
-version = "1.0.4"
+version = "1.0.5"
 description = "Async Python SDK of Eskiz.uz SMS Gateway"
 authors = ["hoosnick <hoosnick000@gmail.com>"]
 license = "MIT"
